@@ -114,14 +114,14 @@ El análisis encontró las siguientes señales (archivo, sin número de línea a
 
 ## 6. Evolución por commit
 
-Métricas calculadas sobre el estado de `main` en **cada commit** (4 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
+Métricas calculadas sobre el estado de `main` en **cada commit** (5 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
 
 ```mermaid
 xychart-beta
     title "Índice de calidad a lo largo de los commits"
-    x-axis ["a341c10", "86c3f96", "e2bd690", "d5bb7aa"]
+    x-axis ["a341c10", "86c3f96", "e2bd690", "d5bb7aa", "ead22c5"]
     y-axis "Índice" 0 --> 100
-    line [0, 15, 40, 48]
+    line [0, 15, 40, 48, 53]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
@@ -130,6 +130,7 @@ xychart-beta
 | 2 | 2026-09-10 | `86c3f96` | Ing. Daniel Quinteros | 0 | 15 | 0% | 0.0% | 0 |
 | 3 | 2026-10-16 | `e2bd690` | Santiago Quiroga Rivarossa | 18 | 40 | 56% | 0.0% | 0 |
 | 4 | 2026-10-17 | `d5bb7aa` | Santiago Quiroga Rivarossa | 34 | 48 | 50% | 0.0% | 0 |
+| 5 | 2026-10-18 | `ead22c5` | Santiago Quiroga Rivarossa | 262 | 53 | 55% | 7.6% | 0 |
 
 ---
 _Informe generado por la cátedra. Las dimensiones y umbrales corresponden a `calidad.py` (perfil `exigente`); el semáforo, a `CRITERIOS-CALIDAD.md`. La documentación del repositorio no se evalúa. Ante dudas, revisá el archivo señalado._
