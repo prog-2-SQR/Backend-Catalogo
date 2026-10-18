@@ -9,15 +9,15 @@
 
 | Aspecto | Resultado |
 |---|---|
-| Índice de calidad | **48/100** |
+| Índice de calidad | **51/100** |
 | Tipo de repositorio | `backend` |
 | Build (`mvnw verify` / `gradlew check`) | OK |
-| Código (LOC) | 34 |
-| Archivos de código | 3 |
-| Clases | 3 |
-| Código dentro de clases (%POO) | 50% |
+| Código (LOC) | 335 |
+| Archivos de código | 20 |
+| Clases | 20 |
+| Código dentro de clases (%POO) | 54% |
 | Funciones fuera de clases | 0 |
-| Duplicación | 0.0% |
+| Duplicación | 13.7% |
 | Tope duro aplicado a D1 | `POO_BAJO` → D1 ≤ 60 |
 
 > Este informe **describe** lo que el análisis midió con los criterios ya establecidos de la materia. No es una nota.
@@ -28,10 +28,12 @@ Criterios de la cátedra (`CRITERIOS-CALIDAD.md`): **Aprobar** se juega con el p
 
 | Semáforo | Resultado |
 |---|---|
-| Aprobar (`estandar`) | **cumple** — 7/11 |
-| Destacar (`exigente`) | **no cumple** — 6/11 |
+| Aprobar (`estandar`) | **no cumple** — 6/11 |
+| Destacar (`exigente`) | **no cumple** — 5/11 |
 
-**Para destacar, falta cumplir:** POO
+**Para aprobar, falta cumplir:** Duplicación
+
+**Para destacar, falta cumplir:** POO; Duplicación
 
 ## 3. Autoría (RepoSense)
 
@@ -47,8 +49,8 @@ Cada dimensión indica **qué mide**, **por qué importa** y **tu resultado**. C
 
 | Dimensión | Peso | Puntaje |
 |:--|--:|--:|
-| **D1** Diseño OO, SOLID y patrones (20%) | 20% | 60 |
-| **D2** Arquitectura hexagonal — backend (15%) | 15% | 36 |
+| **D1** Diseño OO, SOLID y patrones (20%) | 20% | 23 |
+| **D2** Arquitectura hexagonal — backend (15%) | 15% | 100 |
 | **D3** Frontend KMP: MVVM y buenas prácticas (10%) | 10% | N/A |
 | **D4** Integración y contrato (10%) | 10% | 0 |
 | **D5** Seguridad y robustez (10%) | 10% | 100 |
@@ -59,17 +61,17 @@ Cada dimensión indica **qué mide**, **por qué importa** y **tu resultado**. C
 
 - **Qué mide:** Métricas orientadas a objetos (clases, métodos, campos, cohesión, acoplamiento, herencia) y proxies de SOLID, más patrones de diseño.
 - **Por qué importa:** El eje de la materia es el buen uso de la POO y su arquitectura: un diseño con clases claras y poco acopladas es más fácil de entender, probar y cambiar.
-- **Tu resultado:** **60/100**
+- **Tu resultado:** **23/100**
+- **Para investigar la causa:**
+    - ¿Se pensó el modelo de clases antes de codificar o se agrupó después?
+    - ¿Qué clases concentran muchas responsabilidades a la vez?
+    - ¿Los colaboradores llegan como parámetros o se crean por dentro?
 
 ### D2. Arquitectura hexagonal — backend (15%)
 
 - **Qué mide:** Separación en capas (dominio, puertos de entrada/salida, adaptadores) y dirección de las dependencias del backend.
 - **Por qué importa:** Aislar el dominio de la infraestructura permite cambiar la base de datos, el framework o el transporte sin tocar las reglas de negocio.
-- **Tu resultado:** **36/100**
-- **Para investigar la causa:**
-    - ¿El dominio importa framework o detalles de persistencia?
-    - ¿Dónde vive la lógica de negocio frente a los controladores?
-    - ¿Se definieron puertos para los servicios que se consumen?
+- **Tu resultado:** **100/100**
 
 ### D4. Integración y contrato (10%)
 
@@ -107,21 +109,28 @@ Cada dimensión indica **qué mide**, **por qué importa** y **tu resultado**. C
 
 El análisis encontró las siguientes señales (archivo, sin número de línea a propósito):
 
-**hexagonal** (3)
-- falta domain (hexagonal)
-- falta ports/in (hexagonal)
-- falta ports/out (hexagonal)
+**SRP/responsabilidad** (4)
+- clase 'CategoryEntity' sin métodos (6 campos): solo datos — `src/main/java/ar/edu/um/prog2/quiroga/catalogo/category/infrastructure/persistence/entity/CategoryEntity.java`
+- clase 'CategoryResponse' sin métodos (4 campos): solo datos — `src/main/java/ar/edu/um/prog2/quiroga/catalogo/category/infrastructure/web/dto/CategoryResponse.java`
+- clase 'CategoryService' con baja cohesión (33%) — `src/main/java/ar/edu/um/prog2/quiroga/catalogo/category/application/service/CategoryService.java`
+- clase 'Category' sin métodos (6 campos): solo datos — `src/main/java/ar/edu/um/prog2/quiroga/catalogo/category/domain/model/Category.java`
+
+**DIP/concretos** (1)
+- clase 'CategoryController' muy acoplada (CBO=8) — `src/main/java/ar/edu/um/prog2/quiroga/catalogo/category/infrastructure/web/controller/CategoryController.java`
+
+**duplicación** (1)
+- duplicación de bloques: 13.7% del código
 
 ## 6. Evolución por commit
 
-Métricas calculadas sobre el estado de `main` en **cada commit** (5 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
+Métricas calculadas sobre el estado de `main` en **cada commit** (6 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
 
 ```mermaid
 xychart-beta
     title "Índice de calidad a lo largo de los commits"
-    x-axis ["a341c10", "86c3f96", "e2bd690", "d5bb7aa", "ead22c5"]
+    x-axis ["a341c10", "86c3f96", "e2bd690", "d5bb7aa", "ead22c5", "1b81480"]
     y-axis "Índice" 0 --> 100
-    line [0, 15, 40, 48, 53]
+    line [0, 15, 40, 48, 53, 51]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
@@ -131,6 +140,7 @@ xychart-beta
 | 3 | 2026-10-16 | `e2bd690` | Santiago Quiroga Rivarossa | 18 | 40 | 56% | 0.0% | 0 |
 | 4 | 2026-10-17 | `d5bb7aa` | Santiago Quiroga Rivarossa | 34 | 48 | 50% | 0.0% | 0 |
 | 5 | 2026-10-18 | `ead22c5` | Santiago Quiroga Rivarossa | 262 | 53 | 55% | 7.6% | 0 |
+| 6 | 2026-10-18 | `1b81480` | Santiago Quiroga Rivarossa | 335 | 51 | 54% | 13.7% | 0 |
 
 ---
 _Informe generado por la cátedra. Las dimensiones y umbrales corresponden a `calidad.py` (perfil `exigente`); el semáforo, a `CRITERIOS-CALIDAD.md`. La documentación del repositorio no se evalúa. Ante dudas, revisá el archivo señalado._
