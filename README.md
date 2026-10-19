@@ -87,6 +87,7 @@ Los tests levantan su propio PostgreSQL descartable con **Testcontainers**: no n
 ## Decisiones de arquitectura
 
 - [ADR 0001: Motor de base de datos](docs/adr/0001-motor-de-base-de-datos.md)
+- [ADR 0003: Referencias entre slices por ID](docs/adr/0003-referencias-entre-slices-por-id.md)
 
 ## Repositorios del proyecto
 
