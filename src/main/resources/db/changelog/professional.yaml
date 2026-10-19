@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-professionals
+      author: SantiQR-UM
+      changes:
+        - createTable:
+            tableName: professionals
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              # Referencia por ID a la categoría, sin clave foránea (ADR 0003).
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: professionals
+            indexName: idx_professionals_category_id
+            columns:
+              - column:
+                  name: category_id
