@@ -3,13 +3,13 @@
 
 > Documento **generado automáticamente** por la cátedra de Programación II (UM): RepoSense + análisis de calidad de **7 dimensiones**. **No editar a mano**: se regenera en cada evaluación.
 > Rama evaluada: `main`. Análisis **heurístico** (regex + métricas) + build: es una criba para orientar la revisión, **no una nota**. La **documentación** del repositorio no se evalúa.
-> Generado: 2026-10-17.
+> Generado: 2026-10-19.
 
 ## 1. Veredicto
 
 | Aspecto | Resultado |
 |---|---|
-| Índice de calidad | **51/100** |
+| Índice de calidad | **54/100** |
 | Tipo de repositorio | `backend` |
 | Build (`mvnw verify` / `gradlew check`) | OK |
 | Código (LOC) | 335 |
@@ -17,7 +17,9 @@
 | Clases | 20 |
 | Código dentro de clases (%POO) | 54% |
 | Funciones fuera de clases | 0 |
-| Duplicación | 13.7% |
+| Duplicación (puerta) | 0.0% |
+| Duplicación lógica | 0.0% |
+| Duplicación de boilerplate | 10.2% |
 | Tope duro aplicado a D1 | `POO_BAJO` → D1 ≤ 60 |
 
 > Este informe **describe** lo que el análisis midió con los criterios ya establecidos de la materia. No es una nota.
@@ -28,18 +30,16 @@ Criterios de la cátedra (`CRITERIOS-CALIDAD.md`): **Aprobar** se juega con el p
 
 | Semáforo | Resultado |
 |---|---|
-| Aprobar (`estandar`) | **no cumple** — 6/11 |
-| Destacar (`exigente`) | **no cumple** — 5/11 |
+| Aprobar (`estandar`) | **cumple** — 7/11 |
+| Destacar (`exigente`) | **no cumple** — 6/11 |
 
-**Para aprobar, falta cumplir:** Duplicación
-
-**Para destacar, falta cumplir:** POO; Duplicación
+**Para destacar, falta cumplir:** POO
 
 ## 3. Autoría (RepoSense)
 
 | Autor | Commits | Código (LOC) | Tests (LOC) | Docs (LOC) | Días activos | % del código |
 |---|---:|---:|---:|---:|---:|---:|
-| Santiago Quiroga Rivarossa | 10 | 13 | 33 | 136 | 2 | 100% |
+| Santiago Quiroga Rivarossa | 17 | 379 | 33 | 136 | 3 | 100% |
 
 > _El LOC de autoría lo calcula RepoSense sobre el historial y puede diferir del LOC de código del análisis (que mira el estado de `main`)._
 
@@ -49,7 +49,7 @@ Cada dimensión indica **qué mide**, **por qué importa** y **tu resultado**. C
 
 | Dimensión | Peso | Puntaje |
 |:--|--:|--:|
-| **D1** Diseño OO, SOLID y patrones (20%) | 20% | 23 |
+| **D1** Diseño OO, SOLID y patrones (20%) | 20% | 39 |
 | **D2** Arquitectura hexagonal — backend (15%) | 15% | 100 |
 | **D3** Frontend KMP: MVVM y buenas prácticas (10%) | 10% | N/A |
 | **D4** Integración y contrato (10%) | 10% | 0 |
@@ -61,7 +61,7 @@ Cada dimensión indica **qué mide**, **por qué importa** y **tu resultado**. C
 
 - **Qué mide:** Métricas orientadas a objetos (clases, métodos, campos, cohesión, acoplamiento, herencia) y proxies de SOLID, más patrones de diseño.
 - **Por qué importa:** El eje de la materia es el buen uso de la POO y su arquitectura: un diseño con clases claras y poco acopladas es más fácil de entender, probar y cambiar.
-- **Tu resultado:** **23/100**
+- **Tu resultado:** **39/100**
 - **Para investigar la causa:**
     - ¿Se pensó el modelo de clases antes de codificar o se agrupó después?
     - ¿Qué clases concentran muchas responsabilidades a la vez?
@@ -118,9 +118,6 @@ El análisis encontró las siguientes señales (archivo, sin número de línea a
 **DIP/concretos** (1)
 - clase 'CategoryController' muy acoplada (CBO=8) — `src/main/java/ar/edu/um/prog2/quiroga/catalogo/category/infrastructure/web/controller/CategoryController.java`
 
-**duplicación** (1)
-- duplicación de bloques: 13.7% del código
-
 ## 6. Evolución por commit
 
 Métricas calculadas sobre el estado de `main` en **cada commit** (6 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
@@ -130,7 +127,7 @@ xychart-beta
     title "Índice de calidad a lo largo de los commits"
     x-axis ["a341c10", "86c3f96", "e2bd690", "d5bb7aa", "ead22c5", "1b81480"]
     y-axis "Índice" 0 --> 100
-    line [0, 15, 40, 48, 53, 51]
+    line [0, 15, 40, 48, 56, 54]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
@@ -139,8 +136,8 @@ xychart-beta
 | 2 | 2026-09-10 | `86c3f96` | Ing. Daniel Quinteros | 0 | 15 | 0% | 0.0% | 0 |
 | 3 | 2026-10-16 | `e2bd690` | Santiago Quiroga Rivarossa | 18 | 40 | 56% | 0.0% | 0 |
 | 4 | 2026-10-17 | `d5bb7aa` | Santiago Quiroga Rivarossa | 34 | 48 | 50% | 0.0% | 0 |
-| 5 | 2026-10-18 | `ead22c5` | Santiago Quiroga Rivarossa | 262 | 53 | 55% | 7.6% | 0 |
-| 6 | 2026-10-18 | `1b81480` | Santiago Quiroga Rivarossa | 335 | 51 | 54% | 13.7% | 0 |
+| 5 | 2026-10-18 | `ead22c5` | Santiago Quiroga Rivarossa | 262 | 56 | 55% | 0.0% | 0 |
+| 6 | 2026-10-18 | `1b81480` | Santiago Quiroga Rivarossa | 335 | 54 | 54% | 0.0% | 0 |
 
 ---
 _Informe generado por la cátedra. Las dimensiones y umbrales corresponden a `calidad.py` (perfil `exigente`); el semáforo, a `CRITERIOS-CALIDAD.md`. La documentación del repositorio no se evalúa. Ante dudas, revisá el archivo señalado._
