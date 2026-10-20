@@ -60,13 +60,15 @@ class CategoryControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.detail").value("No existe la categoría con id 999"));
+                .andExpect(jsonPath("$.detail").value("No existe la categoría con id 999"))
+                .andExpect(jsonPath("$.code").value("CATEGORY_NOT_FOUND"));
     }
 
     @Test
     void getCategoryByIdReturns400WhenTheIdIsNotANumber() throws Exception {
         mockMvc.perform(get("/api/categories/abc"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
     }
 }
