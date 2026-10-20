@@ -6,3 +6,5 @@ databaseChangeLog:
       file: db/changelog/category.yaml
   - include:
       file: db/changelog/professional.yaml
+  - include:
+      file: db/changelog/schedule.yaml

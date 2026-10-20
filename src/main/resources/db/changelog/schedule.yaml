@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-weekly-schedules
+      author: SantiQR-UM
+      changes:
+        - createTable:
+            tableName: weekly_schedules
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              # Referencia por ID al profesional, sin clave foránea (ADR 0003).
+              - column:
+                  name: professional_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              # MONDAY..SUNDAY, como en el anexo y en java.time.DayOfWeek.
+              - column:
+                  name: day_of_week
+                  type: varchar(9)
+                  constraints:
+                    nullable: false
+              # Horas locales de atención (anexo §4): sin zona horaria.
+              - column:
+                  name: start_time
+                  type: time
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_time
+                  type: time
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slot_duration_minutes
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: weekly_schedules
+            indexName: idx_weekly_schedules_professional_id
+            columns:
+              - column:
+                  name: professional_id
