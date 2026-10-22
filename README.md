@@ -31,7 +31,8 @@ No hace falta instalar Maven: el wrapper (`./mvnw`) descarga la versión correct
 git clone https://github.com/prog-2-SQR/Backend-Catalogo.git
 cd Backend-Catalogo
 
-# 1. Configuración local: copiar el ejemplo y poner una password propia en DB_PASSWORD
+# 1. Configuración local: copiar el ejemplo, poner una password propia en DB_PASSWORD
+#    y los datos de la cuenta técnica de la cátedra (CATEDRA_API_URL y CATEDRA_JWT)
 cp .env.example .env
 
 # 2. Levantar PostgreSQL (puerto 5432)
@@ -71,6 +72,10 @@ Los tests levantan su propio PostgreSQL descartable con **Testcontainers**: no n
 | `DB_NAME` | `catalogo` | Nombre de la base |
 | `DB_USERNAME` | `catalogo` | Usuario |
 | `DB_PASSWORD` | (obligatoria) | Password. Sin valor por defecto: se define en `.env` |
+| `CATEDRA_API_URL` | (obligatoria) | URL base de la API REST de la cátedra (llega por ZeroTier) |
+| `CATEDRA_JWT` | (obligatoria) | JWT técnico de la cuenta del proyecto. Nunca se commitea |
+
+Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el error indica cuál. Los timeouts hacia la cátedra se pueden ajustar con `catedra.connect-timeout` (por defecto `5s`) y `catedra.read-timeout` (por defecto `10s`).
 
 ## Stack
 
