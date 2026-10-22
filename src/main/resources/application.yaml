@@ -21,6 +21,12 @@ spring:
       # Los errores HTTP salen como application/problem+json (RFC 9457), como pide el anexo §13.
       enabled: true
 
+catedra:
+  # Servicio central de la cátedra (anexo §3). Los valores reales van en .env, nunca en el repositorio.
+  # Sin valor por defecto: si faltan, la validación de CatedraProperties frena el arranque.
+  api-url: ${CATEDRA_API_URL:}
+  jwt: ${CATEDRA_JWT:}
+
 management:
   endpoint:
     health:
