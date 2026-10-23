@@ -75,7 +75,7 @@ Los tests levantan su propio PostgreSQL descartable con **Testcontainers**: no n
 | `CATEDRA_API_URL` | (obligatoria) | URL base de la API REST de la cátedra (llega por ZeroTier) |
 | `CATEDRA_JWT` | (obligatoria) | JWT técnico de la cuenta del proyecto. Nunca se commitea |
 
-Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el error indica cuál. Los timeouts hacia la cátedra se pueden ajustar con `catedra.connect-timeout` (por defecto `5s`) y `catedra.read-timeout` (por defecto `10s`).
+Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el error indica cuál. Los timeouts hacia la cátedra se pueden ajustar con `catedra.connect-timeout` (por defecto `5s`) y `catedra.read-timeout` (por defecto `10s`). Si la cátedra no responde o devuelve un 5xx, se reintenta hasta `catedra.max-retries` veces (por defecto `2`), esperando `catedra.retry-delay` (por defecto `1s`) y el doble en cada intento.
 
 ## Stack
 
