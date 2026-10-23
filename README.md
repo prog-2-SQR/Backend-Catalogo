@@ -92,6 +92,7 @@ Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el
 ## Decisiones de arquitectura
 
 - [ADR 0001: Motor de base de datos](docs/adr/0001-motor-de-base-de-datos.md)
+- [ADR 0002: Estructura hexagonal y paquetes transversales](docs/adr/0002-estructura-hexagonal-y-paquetes-transversales.md)
 - [ADR 0003: Referencias entre slices por ID](docs/adr/0003-referencias-entre-slices-por-id.md)
 
 ## Repositorios del proyecto

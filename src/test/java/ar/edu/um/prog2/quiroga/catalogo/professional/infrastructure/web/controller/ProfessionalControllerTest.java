@@ -59,13 +59,15 @@ class ProfessionalControllerTest {
         mockMvc.perform(get("/api/professionals/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.detail").value("No existe el profesional con id 999"));
+                .andExpect(jsonPath("$.detail").value("No existe el profesional con id 999"))
+                .andExpect(jsonPath("$.code").value("PROFESSIONAL_NOT_FOUND"));
     }
 
     @Test
     void getProfessionalByIdReturns400WhenTheIdIsNotANumber() throws Exception {
         mockMvc.perform(get("/api/professionals/abc"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
     }
 }

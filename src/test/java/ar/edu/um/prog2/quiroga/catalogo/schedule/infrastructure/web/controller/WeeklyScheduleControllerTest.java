@@ -75,13 +75,15 @@ class WeeklyScheduleControllerTest {
         mockMvc.perform(get("/api/schedules/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.detail").value("No existe el horario con id 999"));
+                .andExpect(jsonPath("$.detail").value("No existe el horario con id 999"))
+                .andExpect(jsonPath("$.code").value("WEEKLY_SCHEDULE_NOT_FOUND"));
     }
 
     @Test
     void invalidProfessionalIdReturns400() throws Exception {
         mockMvc.perform(get("/api/schedules").param("professionalId", "abc"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
     }
 }
