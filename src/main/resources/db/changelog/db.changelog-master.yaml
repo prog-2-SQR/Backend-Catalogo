@@ -8,3 +8,5 @@ databaseChangeLog:
       file: db/changelog/professional.yaml
   - include:
       file: db/changelog/schedule.yaml
+  - include:
+      file: db/changelog/sync.yaml
