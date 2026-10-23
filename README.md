@@ -77,6 +77,8 @@ Los tests levantan su propio PostgreSQL descartable con **Testcontainers**: no n
 
 Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el error indica cuál. Los timeouts hacia la cátedra se pueden ajustar con `catedra.connect-timeout` (por defecto `5s`) y `catedra.read-timeout` (por defecto `10s`). Si la cátedra no responde o devuelve un 5xx, se reintenta hasta `catedra.max-retries` veces (por defecto `2`), esperando `catedra.retry-delay` (por defecto `1s`) y el doble en cada intento.
 
+Al arrancar con la base vacía, el servicio carga el catálogo completo desde el snapshot de la cátedra. Si la cátedra no responde, arranca igual y lo informa en el log. Para no sincronizar al arrancar: `catedra.sync-on-startup=false`.
+
 ## Stack
 
 | Componente | Versión |
@@ -94,6 +96,7 @@ Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el
 - [ADR 0001: Motor de base de datos](docs/adr/0001-motor-de-base-de-datos.md)
 - [ADR 0002: Estructura hexagonal y paquetes transversales](docs/adr/0002-estructura-hexagonal-y-paquetes-transversales.md)
 - [ADR 0003: Referencias entre slices por ID](docs/adr/0003-referencias-entre-slices-por-id.md)
+- [ADR 0004: sync escribe en los slices del catálogo por un puerto de salida](docs/adr/0004-sync-escribe-en-los-slices-por-puerto-de-salida.md)
 
 ## Repositorios del proyecto
 

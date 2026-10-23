@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-sync-state
+      author: SantiQR-UM
+      changes:
+        - createTable:
+            tableName: sync_state
+            columns:
+              - column:
+                  name: id
+                  type: smallint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: snapshot_version
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: applied_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
