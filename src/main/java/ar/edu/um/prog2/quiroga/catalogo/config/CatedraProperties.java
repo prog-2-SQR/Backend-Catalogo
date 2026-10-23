@@ -2,6 +2,7 @@ package ar.edu.um.prog2.quiroga.catalogo.config;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.time.Duration;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,4 +27,11 @@ public class CatedraProperties {
 
     @NotNull
     private Duration readTimeout = Duration.ofSeconds(10);
+
+    // Reintentos ante caídas o 5xx de la cátedra (anexo §18.4: limitados). La espera se duplica en cada intento.
+    @PositiveOrZero
+    private long maxRetries = 2;
+
+    @NotNull
+    private Duration retryDelay = Duration.ofSeconds(1);
 }
