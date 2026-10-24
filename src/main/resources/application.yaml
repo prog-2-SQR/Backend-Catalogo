@@ -16,6 +16,14 @@ spring:
       ddl-auto: validate
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  data:
+    redis:
+      # Redis de la cátedra (anexo §14), solo lectura. Datos de la cuenta técnica en .env.
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:}
+      password: ${REDIS_PASSWORD:}
+      timeout: 5s
   mvc:
     problemdetails:
       # Los errores HTTP salen como application/problem+json (RFC 9457), como pide el anexo §13.
@@ -28,6 +36,10 @@ catedra:
   jwt: ${CATEDRA_JWT:}
 
 management:
+  health:
+    redis:
+      # El indicador de Spring usa PING/INFO, que la ACL de la cátedra no permite: lo reemplaza CatalogRedisHealthIndicator.
+      enabled: false
   endpoint:
     health:
       # Muestra el estado de cada componente (db, disco...) sin exponer detalles internos.
