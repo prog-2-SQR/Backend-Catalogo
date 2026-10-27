@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** El handler global con un controller propio del test: no depende de ningún slice. */
 @WebMvcTest(controllers = GlobalExceptionHandlerTest.TestController.class)
+// Sin los filtros de seguridad: acá se prueba el controller; la seguridad tiene su propio test (CatalogSecurityTest).
+@AutoConfigureMockMvc(addFilters = false)
 @Import({GlobalExceptionHandlerTest.TestController.class, GlobalExceptionHandler.class})
 class GlobalExceptionHandlerTest {
 
