@@ -9,6 +9,7 @@ import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.Professional;
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.ProfessionalPage;
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.ProfessionalSearch;
 import ar.edu.um.prog2.quiroga.catalogo.professional.infrastructure.persistence.mapper.ProfessionalMapper;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -139,5 +140,16 @@ class JpaProfessionalRepositoryAdapterTest {
         assertThat(second.getSize()).isEqualTo(2);
         assertThat(second.getTotalElements()).isEqualTo(5);
         assertThat(second.totalPages()).isEqualTo(3);
+    }
+
+    @Test
+    void searchCanBeLimitedToSomeProfessionals() {
+        storeFive();
+
+        assertThat(search(ProfessionalSearch.builder().professionalIds(Set.of(202L, 224L))).getContent())
+                .extracting(Professional::getId).containsExactly(202L, 224L);
+        assertThat(search(ProfessionalSearch.builder().professionalIds(Set.of(202L, 224L)).enabled(true)).getContent())
+                .extracting(Professional::getId).containsExactly(202L);
+        assertThat(search(ProfessionalSearch.builder().professionalIds(Set.of())).getContent()).isEmpty();
     }
 }
