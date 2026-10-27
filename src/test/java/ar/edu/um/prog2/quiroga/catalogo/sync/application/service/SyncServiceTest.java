@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.SyncState;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.InitializeCatalogUseCase;
+import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.SynchronizeChangesUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.SynchronizeSnapshotUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,9 @@ class SyncServiceTest {
     @Mock
     private InitializeCatalogUseCase initializeCatalogUseCase;
 
+    @Mock
+    private SynchronizeChangesUseCase synchronizeChangesUseCase;
+
     @InjectMocks
     private SyncService syncService;
 
@@ -38,5 +42,12 @@ class SyncServiceTest {
         when(initializeCatalogUseCase.initializeCatalog()).thenReturn(STATE);
 
         assertThat(syncService.initializeCatalog()).isSameAs(STATE);
+    }
+
+    @Test
+    void synchronizeChangesDelegatesToItsUseCase() {
+        when(synchronizeChangesUseCase.synchronizeChanges()).thenReturn(STATE);
+
+        assertThat(syncService.synchronizeChanges()).isSameAs(STATE);
     }
 }
