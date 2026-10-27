@@ -7,8 +7,11 @@ import static org.mockito.Mockito.when;
 
 import ar.edu.um.prog2.quiroga.catalogo.professional.application.exception.ProfessionalException;
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.Professional;
+import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.ProfessionalPage;
+import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.ProfessionalSearch;
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.ports.in.FindProfessionalByIdUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.ports.in.GetAllProfessionalsUseCase;
+import ar.edu.um.prog2.quiroga.catalogo.professional.domain.ports.in.SearchProfessionalsUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.ports.in.UpsertProfessionalUseCase;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +30,9 @@ class ProfessionalServiceTest {
     private FindProfessionalByIdUseCase findProfessionalByIdUseCase;
     @Mock
     private UpsertProfessionalUseCase upsertProfessionalUseCase;
+
+    @Mock
+    private SearchProfessionalsUseCase searchProfessionalsUseCase;
 
     @InjectMocks
     private ProfessionalService professionalService;
@@ -67,5 +73,14 @@ class ProfessionalServiceTest {
     @Test
     void professionalExceptionWithoutIdHasAGenericMessage() {
         assertThat(new ProfessionalException()).hasMessage("Profesional no encontrado");
+    }
+
+    @Test
+    void searchProfessionalsDelegatesToTheUseCase() {
+        ProfessionalSearch search = ProfessionalSearch.builder().name("ana").page(0).size(20).build();
+        ProfessionalPage page = ProfessionalPage.builder().content(List.of(anaTorres())).totalElements(1).build();
+        when(searchProfessionalsUseCase.searchProfessionals(search)).thenReturn(page);
+
+        assertThat(professionalService.searchProfessionals(search)).isSameAs(page);
     }
 }
