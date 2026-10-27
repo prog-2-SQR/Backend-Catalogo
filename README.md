@@ -31,8 +31,8 @@ No hace falta instalar Maven: el wrapper (`./mvnw`) descarga la versión correct
 git clone https://github.com/prog-2-SQR/Backend-Catalogo.git
 cd Backend-Catalogo
 
-# 1. Configuración local: copiar el ejemplo, poner una password propia en DB_PASSWORD
-#    y los datos de la cuenta técnica de la cátedra (CATEDRA_API_URL y CATEDRA_JWT)
+# 1. Configuración local: copiar el ejemplo, poner una password propia en DB_PASSWORD,
+#    los datos de la cuenta técnica de la cátedra (CATEDRA_*, REDIS_*) y el mismo JWT_BASE64_SECRET que turnos
 cp .env.example .env
 
 # 2. Levantar PostgreSQL (puerto 5432)
@@ -55,6 +55,10 @@ Para detener la base sin perder los datos: `docker compose down` (los datos qued
 
 En Windows, usar `mvnw.cmd` en lugar de `./mvnw`.
 
+## Seguridad
+
+Todas las APIs (`/api/**`) requieren el JWT que devuelve el servicio de turnos en `POST /api/authenticate`, enviado como `Authorization: Bearer <id_token>`; sin token responden `401`. Son públicos `/actuator/health` y la documentación OpenAPI (`/v3/api-docs`, `/swagger-ui.html`).
+
 ## Tests
 
 ```bash
@@ -74,6 +78,7 @@ Los tests levantan su propio PostgreSQL descartable con **Testcontainers**: no n
 | `DB_PASSWORD` | (obligatoria) | Password. Sin valor por defecto: se define en `.env` |
 | `CATEDRA_API_URL` | (obligatoria) | URL base de la API REST de la cátedra (llega por ZeroTier) |
 | `CATEDRA_JWT` | (obligatoria) | JWT técnico de la cuenta del proyecto. Nunca se commitea |
+| `JWT_BASE64_SECRET` | (obligatoria) | Secreto de los JWT de los usuarios: **el mismo valor que en el servicio de turnos**, que los emite. El catálogo solo los valida |
 
 Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el error indica cuál. Los timeouts hacia la cátedra se pueden ajustar con `catedra.connect-timeout` (por defecto `5s`) y `catedra.read-timeout` (por defecto `10s`). Si la cátedra no responde o devuelve un 5xx, se reintenta hasta `catedra.max-retries` veces (por defecto `2`), esperando `catedra.retry-delay` (por defecto `1s`) y el doble en cada intento.
 

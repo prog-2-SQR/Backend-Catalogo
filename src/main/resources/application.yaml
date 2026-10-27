@@ -35,6 +35,12 @@ catedra:
   api-url: ${CATEDRA_API_URL:}
   jwt: ${CATEDRA_JWT:}
 
+security:
+  jwt:
+    # El mismo secreto que el servicio de turnos (que emite los tokens): el catálogo solo los valida.
+    # Sin valor por defecto: si falta, la app no arranca. Nunca se commitea.
+    base64-secret: ${JWT_BASE64_SECRET:}
+
 management:
   health:
     redis:
