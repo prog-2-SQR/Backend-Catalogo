@@ -14,6 +14,7 @@ import ar.edu.um.prog2.quiroga.catalogo.category.infrastructure.web.mapper.Categ
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -22,6 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 /** Solo la capa web: el service es un mock, el mapper de DTO es el real. */
 @WebMvcTest(CategoryController.class)
+// Sin los filtros de seguridad: acá se prueba el controller; la seguridad tiene su propio test (CatalogSecurityTest).
+@AutoConfigureMockMvc(addFilters = false)
 @Import(CategoryDtoMapper.class)
 class CategoryControllerTest {
 
