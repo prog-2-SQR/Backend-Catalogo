@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import ar.edu.um.prog2.quiroga.catalogo.TestcontainersConfiguration;
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.Professional;
+import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.ProfessionalPage;
+import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.ProfessionalSearch;
 import ar.edu.um.prog2.quiroga.catalogo.professional.infrastructure.persistence.mapper.ProfessionalMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +60,84 @@ class JpaProfessionalRepositoryAdapterTest {
     @Test
     void findProfessionalByIdReturnsEmptyWhenItDoesNotExist() {
         assertThat(adapter.findProfessionalById(999L)).isEmpty();
+    }
+
+    // Ana Torres (101, habilitada), Emiliano Ortiz (105, deshabilitado) y tres más de la categoría 101.
+    private void storeFive() {
+        adapter.upsertProfessional(anaTorres());
+        adapter.upsertProfessional(emilianoOrtiz());
+        adapter.upsertProfessional(professional(202L, "Bruno", "Alvarez"));
+        adapter.upsertProfessional(professional(203L, "Carla", "Benitez"));
+        adapter.upsertProfessional(professional(204L, "Dario", "100%_Real"));
+    }
+
+    private static Professional professional(Long id, String firstName, String lastName) {
+        Professional professional = anaTorres();
+        professional.setId(id);
+        professional.setFirstName(firstName);
+        professional.setLastName(lastName);
+        return professional;
+    }
+
+    private ProfessionalPage search(ProfessionalSearch.ProfessionalSearchBuilder search) {
+        return adapter.searchProfessionals(search.page(0).size(20).build());
+    }
+
+    @Test
+    void searchWithoutFiltersReturnsEveryoneOrderedByLastNameAndFirstName() {
+        storeFive();
+
+        ProfessionalPage page = search(ProfessionalSearch.builder());
+
+        assertThat(page.getTotalElements()).isEqualTo(5);
+        assertThat(page.getContent()).extracting(Professional::getLastName)
+                .containsExactly("100%_Real", "Alvarez", "Benitez", "Ortiz", "Torres");
+    }
+
+    @Test
+    void searchFiltersByCategoryAndEnabledTogether() {
+        storeFive();
+
+        assertThat(search(ProfessionalSearch.builder().categoryId(105L)).getContent())
+                .extracting(Professional::getId).containsExactly(224L);
+        assertThat(search(ProfessionalSearch.builder().enabled(false)).getContent())
+                .extracting(Professional::getId).containsExactly(224L);
+        assertThat(search(ProfessionalSearch.builder().categoryId(101L).enabled(true)).getTotalElements()).isEqualTo(4);
+        assertThat(search(ProfessionalSearch.builder().categoryId(105L).enabled(true)).getContent()).isEmpty();
+    }
+
+    @Test
+    void searchByNameIgnoresCaseAndMatchesFirstNameLastNameOrBoth() {
+        storeFive();
+
+        assertThat(search(ProfessionalSearch.builder().name("ANA")).getContent())
+                .extracting(Professional::getId).containsExactly(201L);
+        assertThat(search(ProfessionalSearch.builder().name("torr")).getContent())
+                .extracting(Professional::getId).containsExactly(201L);
+        assertThat(search(ProfessionalSearch.builder().name("  ana tor  ")).getContent())
+                .extracting(Professional::getId).containsExactly(201L);
+    }
+
+    @Test
+    void likeWildcardsTypedByTheUserAreSearchedAsText() {
+        storeFive();
+
+        assertThat(search(ProfessionalSearch.builder().name("%")).getContent())
+                .extracting(Professional::getId).containsExactly(204L);
+        assertThat(search(ProfessionalSearch.builder().name("_")).getContent())
+                .extracting(Professional::getId).containsExactly(204L);
+    }
+
+    @Test
+    void searchIsPaginated() {
+        storeFive();
+
+        ProfessionalPage second = adapter.searchProfessionals(ProfessionalSearch.builder().page(1).size(2).build());
+
+        assertThat(second.getContent()).extracting(Professional::getLastName).containsExactly("Benitez", "Ortiz");
+        assertThat(second.getPage()).isEqualTo(1);
+        assertThat(second.getSize()).isEqualTo(2);
+        assertThat(second.getTotalElements()).isEqualTo(5);
+        assertThat(second.totalPages()).isEqualTo(3);
     }
 }
