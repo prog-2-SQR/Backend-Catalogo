@@ -28,4 +28,9 @@ public class WeeklySchedule {
     private Boolean enabled;
     private Instant createdAt;
     private Instant updatedAt;
+
+    /** Atiende ese día: el horario es de ese día y está habilitado (los deshabilitados son bajas lógicas, anexo §14.4). */
+    public boolean isActiveOn(DayOfWeek day) {
+        return day == dayOfWeek && Boolean.TRUE.equals(enabled);
+    }
 }

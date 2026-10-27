@@ -17,6 +17,7 @@ import ar.edu.um.prog2.quiroga.catalogo.professional.application.service.Profess
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.ProfessionalPage;
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.ProfessionalSearch;
 import ar.edu.um.prog2.quiroga.catalogo.professional.infrastructure.web.mapper.ProfessionalDtoMapper;
+import java.time.DayOfWeek;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -86,8 +87,8 @@ class ProfessionalControllerTest {
         when(professionalService.searchProfessionals(any(ProfessionalSearch.class))).thenReturn(ProfessionalPage.builder()
                 .content(List.of(anaTorres())).page(0).size(10).totalElements(1).build());
 
-        mockMvc.perform(get("/api/professionals/search")
-                        .param("categoryId", "101").param("name", "ana").param("enabled", "true").param("size", "10"))
+        mockMvc.perform(get("/api/professionals/search").param("categoryId", "101").param("name", "ana")
+                        .param("enabled", "true").param("dayOfWeek", "MONDAY").param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(201))
                 .andExpect(jsonPath("$.totalElements").value(1))
@@ -96,8 +97,8 @@ class ProfessionalControllerTest {
         ArgumentCaptor<ProfessionalSearch> search = ArgumentCaptor.forClass(ProfessionalSearch.class);
         verify(professionalService).searchProfessionals(search.capture());
         assertThat(search.getValue())
-                .extracting("categoryId", "name", "enabled", "page", "size")
-                .containsExactly(101L, "ana", true, 0, 10);
+                .extracting("categoryId", "name", "enabled", "dayOfWeek", "page", "size")
+                .containsExactly(101L, "ana", true, DayOfWeek.MONDAY, 0, 10);
     }
 
     @Test
@@ -119,6 +120,14 @@ class ProfessionalControllerTest {
                 .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
         mockMvc.perform(get("/api/professionals/search").param("page", "-1"))
                 .andExpect(status().isBadRequest());
+        verify(professionalService, never()).searchProfessionals(any());
+    }
+
+    @Test
+    void anUnknownDayReturns400() throws Exception {
+        mockMvc.perform(get("/api/professionals/search").param("dayOfWeek", "LUNES"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
         verify(professionalService, never()).searchProfessionals(any());
     }
 }

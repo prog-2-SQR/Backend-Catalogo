@@ -104,6 +104,7 @@ Después, cada minuto (`catedra.sync-interval`, formato ISO-8601, por defecto `P
 - [ADR 0002: Estructura hexagonal y paquetes transversales](docs/adr/0002-estructura-hexagonal-y-paquetes-transversales.md)
 - [ADR 0003: Referencias entre slices por ID](docs/adr/0003-referencias-entre-slices-por-id.md)
 - [ADR 0004: sync escribe en los slices del catálogo por un puerto de salida](docs/adr/0004-sync-escribe-en-los-slices-por-puerto-de-salida.md)
+- [ADR 0005: Búsqueda por disponibilidad con un puerto de salida hacia los horarios](docs/adr/0005-busqueda-por-disponibilidad-con-puerto-de-salida.md)
 
 ## Repositorios del proyecto
 
