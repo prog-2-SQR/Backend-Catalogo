@@ -8,6 +8,7 @@ import ar.edu.um.prog2.quiroga.catalogo.professional.infrastructure.web.mapper.P
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import java.time.DayOfWeek;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,16 +36,18 @@ public class ProfessionalController {
     }
 
     // Búsqueda paginada (enunciado §4.1): todos los filtros son opcionales y se combinan con AND.
+    // dayOfWeek: MONDAY … SUNDAY (como el anexo §7); un valor inválido → 400.
     // Parámetros fuera de rango → 400 VALIDATION_ERROR (validación de métodos de Spring MVC).
     @GetMapping("/search")
     public ResponseEntity<ProfessionalPageResponse> searchProfessionals(
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) @Size(max = 100) String name,
             @RequestParam(required = false) Boolean enabled,
+            @RequestParam(required = false) DayOfWeek dayOfWeek,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         ProfessionalSearch search = ProfessionalSearch.builder()
-                .categoryId(categoryId).name(name).enabled(enabled).page(page).size(size)
+                .categoryId(categoryId).name(name).enabled(enabled).dayOfWeek(dayOfWeek).page(page).size(size)
                 .build();
         return ResponseEntity.ok(professionalDtoMapper.toPageResponse(professionalService.searchProfessionals(search)));
     }

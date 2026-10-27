@@ -1,6 +1,7 @@
 package ar.edu.um.prog2.quiroga.catalogo.professional.infrastructure.persistence.specification;
 
 import java.util.Locale;
+import java.util.Set;
 
 import ar.edu.um.prog2.quiroga.catalogo.professional.domain.model.ProfessionalSearch;
 import ar.edu.um.prog2.quiroga.catalogo.professional.infrastructure.persistence.entity.ProfessionalEntity;
@@ -29,6 +30,9 @@ public final class ProfessionalSpecifications {
         if (search.getEnabled() != null) {
             specification = specification.and(enabled(search.getEnabled()));
         }
+        if (search.getProfessionalIds() != null) {
+            specification = specification.and(idIn(search.getProfessionalIds()));
+        }
         return specification;
     }
 
@@ -46,6 +50,11 @@ public final class ProfessionalSpecifications {
 
     static Specification<ProfessionalEntity> enabled(Boolean enabled) {
         return (root, query, cb) -> cb.equal(root.get("enabled"), enabled);
+    }
+
+    // Sin IDs (nadie atiende ese día) no hay resultados: "IN ()" no es SQL válido, se usa una condición falsa.
+    static Specification<ProfessionalEntity> idIn(Set<Long> ids) {
+        return (root, query, cb) -> ids.isEmpty() ? cb.disjunction() : root.get("id").in(ids);
     }
 
     // % y _ son comodines de LIKE: si el usuario los escribe, se buscan como texto.
