@@ -79,6 +79,8 @@ Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el
 
 Al arrancar con la base vacía, el servicio carga el catálogo completo desde el snapshot de la cátedra. Si la cátedra no responde, arranca igual y lo informa en el log. Para no sincronizar al arrancar: `catedra.sync-on-startup=false`.
 
+Después, cada minuto (`catedra.sync-interval`, formato ISO-8601, por defecto `PT1M`) revisa en el Redis de la cátedra si hay versiones nuevas y aplica los cambios en orden; si la versión local quedó fuera de la ventana o falta una versión, hace una sincronización completa. Se desactiva con `catedra.sync-polling=false`.
+
 ## Stack
 
 | Componente | Versión |

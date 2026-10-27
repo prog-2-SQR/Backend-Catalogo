@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Copia completa del catálogo publicada por la cátedra (anexo §7).
+ * Estado del catálogo en una versión: completo (snapshot REST, anexo §7) o solo las entidades que cambiaron en esa
+ * versión (Redis, anexo §14.5). En los dos casos se aplica igual: upsert de las entidades y la versión al final.
  * Modelo propio de sync: no importa los modelos de los otros slices (opción "puerto de salida" de la skill).
  */
 @Getter
