@@ -11,6 +11,7 @@ import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.ApplySnapshotUseCas
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.SynchronizeChangesUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.SynchronizeSnapshotUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.out.CatalogChangeFeed;
+import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.out.SyncActivityRepository;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.out.SyncStateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
  * Sincronización incremental (enunciado §6.2, anexo §14): versión por versión, en orden, cada una en su propia
  * transacción (ApplySnapshotUseCase), así la versión local solo avanza cuando sus cambios quedaron guardados.
  * Sin versión local, fuera de la ventana o con una versión faltante o incompleta → sincronización completa.
+ * El resultado queda registrado para el estado de la sincronización.
  */
 @Slf4j
 @Component
@@ -30,9 +32,14 @@ public class SynchronizeChangesUseCaseImpl implements SynchronizeChangesUseCase 
     private final CatalogChangeFeed catalogChangeFeed;
     private final ApplySnapshotUseCase applySnapshotUseCase;
     private final SynchronizeSnapshotUseCase synchronizeSnapshotUseCase;
+    private final SyncActivityRepository syncActivityRepository;
 
     @Override
     public SyncState synchronizeChanges() {
+        return SyncActivityRecording.recorded(syncActivityRepository, this::synchronize);
+    }
+
+    private SyncState synchronize() {
         Optional<SyncState> local = syncStateRepository.findSyncState();
         if (local.isEmpty()) {
             return synchronizeSnapshotUseCase.synchronizeSnapshot();

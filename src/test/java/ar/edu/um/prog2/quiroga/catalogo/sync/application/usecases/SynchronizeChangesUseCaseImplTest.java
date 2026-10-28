@@ -3,6 +3,7 @@ package ar.edu.um.prog2.quiroga.catalogo.sync.application.usecases;
 import static ar.edu.um.prog2.quiroga.catalogo.sync.support.SyncFixtures.anaTorres;
 import static ar.edu.um.prog2.quiroga.catalogo.sync.support.SyncFixtures.cardiologia;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
@@ -21,6 +22,7 @@ import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.SyncState;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.ApplySnapshotUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.SynchronizeSnapshotUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.out.CatalogChangeFeed;
+import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.out.SyncActivityRepository;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.out.SyncStateRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +47,9 @@ class SynchronizeChangesUseCaseImplTest {
 
     @Mock
     private SynchronizeSnapshotUseCase synchronizeSnapshotUseCase;
+
+    @Mock
+    private SyncActivityRepository syncActivityRepository;
 
     @InjectMocks
     private SynchronizeChangesUseCaseImpl synchronizeChangesUseCase;
@@ -75,6 +80,19 @@ class SynchronizeChangesUseCaseImplTest {
         assertThat(synchronizeChangesUseCase.synchronizeChanges().getSnapshotVersion()).isEqualTo(7L);
         verify(applySnapshotUseCase, never()).applySnapshot(any());
         verify(synchronizeSnapshotUseCase, never()).synchronizeSnapshot();
+        // Revisar y encontrar que está al día también es un intento que terminó bien.
+        verify(syncActivityRepository).recordSuccess();
+    }
+
+    @Test
+    void redisDownIsRecordedAsAFailure() {
+        localVersion(7);
+        when(catalogChangeFeed.findVersions()).thenThrow(new SyncException("No se pudo leer el Redis de la cátedra"));
+
+        assertThatThrownBy(() -> synchronizeChangesUseCase.synchronizeChanges()).isInstanceOf(SyncException.class);
+
+        verify(syncActivityRepository).recordFailure("No se pudo leer el Redis de la cátedra");
+        verify(syncActivityRepository, never()).recordSuccess();
     }
 
     @Test
