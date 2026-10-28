@@ -2,6 +2,7 @@ package ar.edu.um.prog2.quiroga.catalogo.sync;
 
 import static ar.edu.um.prog2.quiroga.catalogo.sync.support.SyncFixtures.snapshot;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -9,7 +10,10 @@ import java.io.IOException;
 import ar.edu.um.prog2.quiroga.catalogo.TestcontainersConfiguration;
 import ar.edu.um.prog2.quiroga.catalogo.category.application.service.CategoryService;
 import ar.edu.um.prog2.quiroga.catalogo.professional.application.service.ProfessionalService;
+import ar.edu.um.prog2.quiroga.catalogo.sync.application.exception.SyncException;
 import ar.edu.um.prog2.quiroga.catalogo.sync.application.service.SyncService;
+import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.SyncHealth;
+import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.SyncStatus;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.out.CatalogSnapshotClient;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.out.SyncStateRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -101,6 +105,25 @@ class IncrementalSynchronizationTest {
         syncService.synchronizeChanges();
 
         assertThat(syncStateRepository.findSyncState()).get().extracting("snapshotVersion").isEqualTo(5L);
+    }
+
+    @Test
+    void theStatusShowsTheVersionsAndTheLastError() throws Exception {
+        when(catalogSnapshotClient.fetchSnapshot()).thenReturn(snapshot(1));
+        syncService.synchronizeSnapshot();
+        redis("HSET", "catedra:sync:metadata", "currentVersion", "1", "oldestAvailableVersion", "1");
+        assertThat(syncService.getSyncStatus().getHealth()).isEqualTo(SyncHealth.UP_TO_DATE);
+
+        // Se publica la 2 pero falta su detalle, y el snapshot de respaldo tampoco responde.
+        redis("HSET", "catedra:sync:metadata", "currentVersion", "2");
+        when(catalogSnapshotClient.fetchSnapshot()).thenThrow(new SyncException("No se pudo obtener el snapshot de la cátedra"));
+        assertThatThrownBy(() -> syncService.synchronizeChanges()).isInstanceOf(SyncException.class);
+
+        SyncStatus status = syncService.getSyncStatus();
+        assertThat(status.getHealth()).isEqualTo(SyncHealth.FAILING);
+        assertThat(status.getLocalVersion()).isEqualTo(1L);
+        assertThat(status.getPublishedVersion()).isEqualTo(2L);
+        assertThat(status.getLastFailureMessage()).isEqualTo("No se pudo obtener el snapshot de la cátedra");
     }
 
     private void redis(String... command) throws IOException, InterruptedException {
