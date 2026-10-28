@@ -29,8 +29,11 @@ public class WeeklySchedule {
     private Instant createdAt;
     private Instant updatedAt;
 
-    /** Atiende ese día: el horario es de ese día y está habilitado (los deshabilitados son bajas lógicas, anexo §14.4). */
+    /**
+     * Atiende ese día: el horario es de ese día y está habilitado (los deshabilitados son bajas lógicas, anexo §14.4).
+     * DayOfWeek se compara con equals: java.time lo declara "value-based" y desaconseja comparar por identidad (==).
+     */
     public boolean isActiveOn(DayOfWeek day) {
-        return day == dayOfWeek && Boolean.TRUE.equals(enabled);
+        return day != null && day.equals(dayOfWeek) && Boolean.TRUE.equals(enabled);
     }
 }
