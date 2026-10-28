@@ -1,9 +1,12 @@
 package ar.edu.um.prog2.quiroga.catalogo.sync.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.CatalogUpdate;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.SyncState;
+import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.HandleCatalogUpdateUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.InitializeCatalogUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.SynchronizeChangesUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.SynchronizeSnapshotUseCase;
@@ -27,6 +30,9 @@ class SyncServiceTest {
     @Mock
     private SynchronizeChangesUseCase synchronizeChangesUseCase;
 
+    @Mock
+    private HandleCatalogUpdateUseCase handleCatalogUpdateUseCase;
+
     @InjectMocks
     private SyncService syncService;
 
@@ -49,5 +55,14 @@ class SyncServiceTest {
         when(synchronizeChangesUseCase.synchronizeChanges()).thenReturn(STATE);
 
         assertThat(syncService.synchronizeChanges()).isSameAs(STATE);
+    }
+
+    @Test
+    void handleCatalogUpdateDelegatesToItsUseCase() {
+        CatalogUpdate update = CatalogUpdate.builder().eventId("catalog-event-7-4f3b").newVersion(7L).build();
+
+        syncService.handleCatalogUpdate(update);
+
+        verify(handleCatalogUpdateUseCase).handleCatalogUpdate(update);
     }
 }

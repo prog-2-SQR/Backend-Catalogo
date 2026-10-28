@@ -32,7 +32,7 @@ git clone https://github.com/prog-2-SQR/Backend-Catalogo.git
 cd Backend-Catalogo
 
 # 1. Configuración local: copiar el ejemplo, poner una password propia en DB_PASSWORD,
-#    los datos de la cuenta técnica de la cátedra (CATEDRA_*, REDIS_*) y el mismo JWT_BASE64_SECRET que turnos
+#    los datos de la cuenta técnica de la cátedra (CATEDRA_*, REDIS_*, KAFKA_*) y el mismo JWT_BASE64_SECRET que turnos
 cp .env.example .env
 
 # 2. Levantar PostgreSQL (puerto 5432)
@@ -65,7 +65,7 @@ Todas las APIs (`/api/**`) requieren el JWT que devuelve el servicio de turnos e
 ./mvnw verify
 ```
 
-Los tests levantan su propio PostgreSQL descartable con **Testcontainers**: no necesitan el `.env` ni el compose, solo Docker funcionando.
+Los tests levantan su propio PostgreSQL, Redis y Kafka descartables con **Testcontainers**: no necesitan el `.env` ni el compose, solo Docker funcionando.
 
 ## Configuración
 
@@ -78,6 +78,11 @@ Los tests levantan su propio PostgreSQL descartable con **Testcontainers**: no n
 | `DB_PASSWORD` | (obligatoria) | Password. Sin valor por defecto: se define en `.env` |
 | `CATEDRA_API_URL` | (obligatoria) | URL base de la API REST de la cátedra (llega por ZeroTier) |
 | `CATEDRA_JWT` | (obligatoria) | JWT técnico de la cuenta del proyecto. Nunca se commitea |
+| `REDIS_HOST` / `REDIS_PORT` | `localhost` / `6379` | Redis de la cátedra (solo lectura) |
+| `REDIS_USERNAME` / `REDIS_PASSWORD` | (de la integración) | Usuario y password de Redis que informa `GET /api/student/integration` |
+| `KAFKA_BOOTSTRAP_SERVERS` | `localhost:9092` | Broker de Kafka de la cátedra |
+| `KAFKA_CONSUMER_GROUP_ID` | `catalogo` | Consumer group de la integración (`alumnos-<groupId>`) |
+| `KAFKA_CATALOG_TOPIC` | (obligatoria) | Topic de avisos de versión nueva (`catedra.catalog.<groupId>`) |
 | `JWT_BASE64_SECRET` | (obligatoria) | Secreto de los JWT de los usuarios: **el mismo valor que en el servicio de turnos**, que los emite. El catálogo solo los valida |
 
 Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el error indica cuál. Los timeouts hacia la cátedra se pueden ajustar con `catedra.connect-timeout` (por defecto `5s`) y `catedra.read-timeout` (por defecto `10s`). Si la cátedra no responde o devuelve un 5xx, se reintenta hasta `catedra.max-retries` veces (por defecto `2`), esperando `catedra.retry-delay` (por defecto `1s`) y el doble en cada intento.
@@ -85,6 +90,8 @@ Si falta una variable obligatoria de la cátedra, la aplicación no arranca y el
 Al arrancar con la base vacía, el servicio carga el catálogo completo desde el snapshot de la cátedra. Si la cátedra no responde, arranca igual y lo informa en el log. Para no sincronizar al arrancar: `catedra.sync-on-startup=false`.
 
 Después, cada minuto (`catedra.sync-interval`, formato ISO-8601, por defecto `PT1M`) revisa en el Redis de la cátedra si hay versiones nuevas y aplica los cambios en orden; si la versión local quedó fuera de la ventana o falta una versión, hace una sincronización completa. Se desactiva con `catedra.sync-polling=false`.
+
+Además escucha el topic `KAFKA_CATALOG_TOPIC`: cada aviso `CatalogUpdated` dispara esa misma sincronización sin esperar al próximo chequeo. Un aviso repetido (mismo `eventId`) no se vuelve a procesar, y el offset se confirma después de aplicar los cambios. Si la sincronización falla, el aviso se reintenta (`catedra.max-retries`, `catedra.retry-delay`); si sigue fallando, el chequeo periódico recupera el atraso, porque Kafka solo avisa y los datos salen de Redis o del snapshot.
 
 ## Stack
 
@@ -95,8 +102,8 @@ Después, cada minuto (`catedra.sync-interval`, formato ISO-8601, por defecto `P
 | Maven (wrapper) | 3.10.0 |
 | PostgreSQL | 18 |
 | Liquibase | gestionado por Spring Boot |
-| Dependencias | Spring Web MVC, Validation, Spring Data JPA, Lombok, Actuator |
-| Tests | JUnit 5, Testcontainers |
+| Dependencias | Spring Web MVC, Validation, Spring Data JPA, Spring Data Redis, Spring Kafka, Spring Security (resource server), RestClient, Lombok, Actuator |
+| Tests | JUnit 5, Mockito, AssertJ, Testcontainers (PostgreSQL, Redis, Kafka), WireMock, JaCoCo |
 
 ## Decisiones de arquitectura
 

@@ -22,3 +22,26 @@ databaseChangeLog:
                   type: timestamp with time zone
                   constraints:
                     nullable: false
+  - changeSet:
+      id: create-sync-processed-events
+      author: SantiQR-UM
+      changes:
+        - createTable:
+            tableName: sync_processed_events
+            columns:
+              - column:
+                  name: event_id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: new_version
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: processed_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false

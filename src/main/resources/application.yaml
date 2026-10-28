@@ -24,6 +24,16 @@ spring:
       username: ${REDIS_USERNAME:}
       password: ${REDIS_PASSWORD:}
       timeout: 5s
+  kafka:
+    # Kafka de la cátedra (anexo §15): el catálogo solo consume. Datos de la integración en .env.
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:catalogo}
+      # La primera vez lee el topic desde el principio; después sigue desde el último offset confirmado.
+      auto-offset-reset: earliest
+    listener:
+      # El offset de cada mensaje se confirma cuando el listener terminó de procesarlo (anexo §16).
+      ack-mode: record
   mvc:
     problemdetails:
       # Los errores HTTP salen como application/problem+json (RFC 9457), como pide el anexo §13.
@@ -34,6 +44,8 @@ catedra:
   # Sin valor por defecto: si faltan, la validación de CatedraProperties frena el arranque.
   api-url: ${CATEDRA_API_URL:}
   jwt: ${CATEDRA_JWT:}
+  # Topic de avisos de versión nueva (anexo §15.2). Sin valor por defecto: si falta, la app no arranca.
+  catalog-topic: ${KAFKA_CATALOG_TOPIC}
 
 security:
   jwt:
