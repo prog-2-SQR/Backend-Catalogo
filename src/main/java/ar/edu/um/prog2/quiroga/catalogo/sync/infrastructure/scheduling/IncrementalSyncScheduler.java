@@ -9,8 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * Revisa cada cierto tiempo si la cátedra publicó versiones nuevas. Cubre las notificaciones de Kafka perdidas
- * (enunciado §8) y, mientras los topics de la cátedra no funcionen, es lo que mantiene la copia al día.
+ * Revisa cada cierto tiempo si la cátedra publicó versiones nuevas. Es la red de seguridad del listener de Kafka:
+ * cubre los avisos perdidos o que fallaron después de los reintentos (enunciado §8, anexo §16).
  * Se apaga con catedra.sync-polling=false.
  */
 @Slf4j
