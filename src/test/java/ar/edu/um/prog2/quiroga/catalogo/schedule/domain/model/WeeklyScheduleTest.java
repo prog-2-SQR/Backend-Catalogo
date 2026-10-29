@@ -22,4 +22,9 @@ class WeeklyScheduleTest {
 
         assertThat(disabled.isActiveOn(DayOfWeek.MONDAY)).isFalse();
     }
+
+    @Test
+    void withoutADayItIsNotActive() {
+        assertThat(mondayAfternoon().isActiveOn(null)).isFalse();
+    }
 }
