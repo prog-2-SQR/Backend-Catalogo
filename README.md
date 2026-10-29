@@ -8,6 +8,8 @@ Detalle completo en [`docs/EVALUACION.md`](docs/EVALUACION.md).
 # Backend-Catalogo
 
 [![CI](https://github.com/prog-2-SQR/Backend-Catalogo/actions/workflows/ci.yml/badge.svg)](https://github.com/prog-2-SQR/Backend-Catalogo/actions/workflows/ci.yml)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=prog-2-SQR_Backend-Catalogo&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=prog-2-SQR_Backend-Catalogo)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=prog-2-SQR_Backend-Catalogo&metric=coverage)](https://sonarcloud.io/summary/new_code?id=prog-2-SQR_Backend-Catalogo)
 
 Servicio de **catálogo y sincronización** del proyecto integrador de Programación 2 (Universidad de Mendoza, 2026).
 
@@ -66,6 +68,8 @@ Todas las APIs (`/api/**`) requieren el JWT que devuelve el servicio de turnos e
 ```
 
 Los tests levantan su propio PostgreSQL, Redis y Kafka descartables con **Testcontainers**: no necesitan el `.env` ni el compose, solo Docker funcionando.
+
+En cada push y PR, el CI además analiza el código con **[SonarQube Cloud](https://sonarcloud.io/summary/new_code?id=prog-2-SQR_Backend-Catalogo)**: quality gate, bugs, vulnerabilidades, duplicación y la cobertura de JaCoCo. El token está en el secret `SONAR_TOKEN` del repositorio.
 
 ## Configuración
 
