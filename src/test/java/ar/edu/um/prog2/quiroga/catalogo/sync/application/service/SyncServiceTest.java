@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.CatalogUpdate;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.SyncState;
+import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.SyncStatus;
+import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.GetSyncStatusUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.HandleCatalogUpdateUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.InitializeCatalogUseCase;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.SynchronizeChangesUseCase;
@@ -32,6 +34,9 @@ class SyncServiceTest {
 
     @Mock
     private HandleCatalogUpdateUseCase handleCatalogUpdateUseCase;
+
+    @Mock
+    private GetSyncStatusUseCase getSyncStatusUseCase;
 
     @InjectMocks
     private SyncService syncService;
@@ -64,5 +69,13 @@ class SyncServiceTest {
         syncService.handleCatalogUpdate(update);
 
         verify(handleCatalogUpdateUseCase).handleCatalogUpdate(update);
+    }
+
+    @Test
+    void getSyncStatusDelegatesToItsUseCase() {
+        SyncStatus status = SyncStatus.builder().localVersion(2L).build();
+        when(getSyncStatusUseCase.getSyncStatus()).thenReturn(status);
+
+        assertThat(syncService.getSyncStatus()).isSameAs(status);
     }
 }

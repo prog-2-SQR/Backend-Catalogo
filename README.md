@@ -97,6 +97,13 @@ Después, cada minuto (`catedra.sync-interval`, formato ISO-8601, por defecto `P
 
 Además escucha el topic `KAFKA_CATALOG_TOPIC`: cada aviso `CatalogUpdated` dispara esa misma sincronización sin esperar al próximo chequeo. Un aviso repetido (mismo `eventId`) no se vuelve a procesar, y el offset se confirma después de aplicar los cambios. Si la sincronización falla, el aviso se reintenta (`catedra.max-retries`, `catedra.retry-delay`); si sigue fallando, el chequeo periódico recupera el atraso, porque Kafka solo avisa y los datos salen de Redis o del snapshot.
 
+El estado de la sincronización se consulta con `GET /api/sync/status` (con JWT): versión local y cuándo se aplicó, versión publicada por la cátedra, último intento correcto y último error con su mensaje, y un resumen en `health` (`NOT_INITIALIZED`, `FAILING`, `UNKNOWN`, `OUTDATED` o `UP_TO_DATE`). Los intentos se registran en memoria: al reiniciar el servicio empiezan de nuevo, mientras que la versión local queda en la base.
+
+```json
+{"health": "UP_TO_DATE", "localVersion": 1, "appliedAt": "2026-10-28T11:29:41Z", "publishedVersion": 1,
+ "lastSuccessAt": "2026-10-28T11:30:41Z", "lastFailureAt": null, "lastFailureMessage": null}
+```
+
 ## Stack
 
 | Componente | Versión |
