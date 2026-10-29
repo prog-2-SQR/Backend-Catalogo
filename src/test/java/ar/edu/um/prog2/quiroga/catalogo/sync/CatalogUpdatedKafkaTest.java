@@ -9,15 +9,22 @@ import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 import ar.edu.um.prog2.quiroga.catalogo.TestcontainersConfiguration;
 import ar.edu.um.prog2.quiroga.catalogo.sync.application.exception.SyncException;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.model.SyncState;
 import ar.edu.um.prog2.quiroga.catalogo.sync.domain.ports.in.SynchronizeChangesUseCase;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -68,6 +75,9 @@ class CatalogUpdatedKafkaTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private KafkaContainer kafkaContainer;
+
     @BeforeEach
     void synchronizationSucceeds() {
         when(synchronizeChangesUseCase.synchronizeChanges()).thenReturn(SyncState.builder().snapshotVersion(7L).build());
@@ -109,6 +119,25 @@ class CatalogUpdatedKafkaTest {
 
         verify(synchronizeChangesUseCase, timeout(WAIT.toMillis()).times(2)).synchronizeChanges();
         await().atMost(WAIT).untilAsserted(() -> assertThat(processedEventIds()).containsExactly("catalog-event-10-c3a0"));
+    }
+
+    // La cátedra puede mandar los mensajes comprimidos: el listener los lee igual. Este test usa las librerías de
+    // compresión fijadas en el pom (zstd-jni, snappy-java, lz4-java) para comprimir y descomprimir.
+    @ParameterizedTest
+    @ValueSource(strings = {"zstd", "snappy", "lz4", "gzip"})
+    void compressedNoticesAreRead(String compression) throws Exception {
+        String eventId = "catalog-event-11-" + compression;
+        Map<String, Object> config = Map.of(
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.getBootstrapServers(),
+                ProducerConfig.COMPRESSION_TYPE_CONFIG, compression,
+                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        try (KafkaProducer<String, String> producer = new KafkaProducer<>(config)) {
+            producer.send(new ProducerRecord<>(TOPIC, "11", catalogUpdated(eventId, 11))).get();
+        }
+
+        verify(synchronizeChangesUseCase, timeout(WAIT.toMillis()).times(1)).synchronizeChanges();
+        await().atMost(WAIT).untilAsserted(() -> assertThat(processedEventIds()).containsExactly(eventId));
     }
 
     // Message key: la versión como texto (anexo §15.1).
