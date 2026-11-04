@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Aplica las tres colecciones y recién después guarda la versión, todo en una transacción:
  * si algo falla a mitad, no queda ni una parte de los datos ni una versión que no les corresponde (anexo §7).
+ * Lo usan el snapshot completo y cada versión incremental (solo con las entidades que cambiaron).
  */
 @Slf4j
 @Component
@@ -34,7 +35,7 @@ public class ApplySnapshotUseCaseImpl implements ApplySnapshotUseCase {
                 .snapshotVersion(snapshot.getSnapshotVersion())
                 .appliedAt(Instant.now())
                 .build());
-        log.info("Snapshot {} aplicado: {} categorías, {} profesionales, {} horarios",
+        log.info("Versión {} aplicada: {} categorías, {} profesionales, {} horarios",
                 snapshot.getSnapshotVersion(), snapshot.getCategories().size(),
                 snapshot.getProfessionals().size(), snapshot.getWeeklySchedules().size());
         return applied;
