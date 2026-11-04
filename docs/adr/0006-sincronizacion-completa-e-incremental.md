@@ -36,4 +36,8 @@ El enunciado pide aplicar los cambios en orden, que la versión local avance sol
 - El catálogo local siempre corresponde exactamente a una versión publicada, nunca a una mezcla.
 - Un aviso duplicado, perdido o fuera de orden no cambia el resultado: lo que manda es la versión local y lo que hay en Redis.
 - Si la cátedra no responde, las búsquedas siguen con la copia local, y el error queda visible en `GET /api/sync/status` (#35).
-- Probado con Testcontainers: snapshot, cambios en orden, discontinuidad, aviso repetido y falla a mitad de una versión. Contra la cátedra real, el topic de Kafka no publica avisos, y el chequeo periódico de Redis es el que mantiene el catálogo al día.
+- Probado con Testcontainers: snapshot, cambios en orden, discontinuidad, aviso repetido y falla a mitad de una versión.
+- Probado contra la cátedra real (04/11/2026), cuando empezó a cambiar el primer profesional cada hora:
+  - llegaron los avisos de las versiones 2 a 6, y el catálogo aplicó cada una en orden;
+  - un aviso de una versión ya aplicada no hizo nada.
+- Hasta el 03/11 el topic no publicaba, y el chequeo periódico de Redis fue el que mantuvo el catálogo al día. Eso confirma que conviene tener las dos vías.

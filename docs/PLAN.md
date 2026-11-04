@@ -61,4 +61,4 @@ ar.edu.um.prog2.quiroga.catalogo
 
 ## Recortes y pendientes
 
-- **Kafka de la cátedra**: el topic `catedra.catalog.<groupId>` no publica avisos. El listener está probado con Testcontainers, y contra la cátedra real el chequeo periódico de Redis mantiene el catálogo al día. Detalle en [Documentacion/integracion/pruebas-con-la-catedra.md](https://github.com/prog-2-SQR/Documentacion/blob/main/integracion/pruebas-con-la-catedra.md).
+- **Kafka de la cátedra**: hasta el 03/11 el topic `catedra.catalog.<groupId>` no publicaba avisos, y el chequeo periódico de Redis mantenía el catálogo al día. Desde el 04/11 la cátedra cambia cada hora el estado del primer profesional y publica el aviso: el catálogo lo aplica en segundos (probado contra la cátedra, versiones 2 a 6). Detalle en [Documentacion/integracion/pruebas-con-la-catedra.md](https://github.com/prog-2-SQR/Documentacion/blob/main/integracion/pruebas-con-la-catedra.md).
