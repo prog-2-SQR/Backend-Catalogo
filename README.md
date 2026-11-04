@@ -17,7 +17,11 @@ Mantiene una copia local de categorías, profesionales y horarios semanales publ
 
 ## Estado
 
-Esqueleto con base de datos: proyecto Spring Boot conectado a su propio PostgreSQL, con migraciones Liquibase y health check. La sincronización y las APIs se incorporan en las próximas issues (ver milestones del repositorio).
+Completo para la entrega: catálogo local (categorías, profesionales y horarios), sincronización completa e incremental con la cátedra (snapshot REST, cambios en Redis y aviso por Kafka), búsqueda con filtros y paginación, estado de la sincronización y APIs protegidas con el JWT de Turnos.
+
+- [SPEC](docs/SPEC.md): qué hace el servicio, su API, la sincronización y el modelo de datos.
+- [PLAN](docs/PLAN.md): arquitectura, etapas, decisiones y estrategia de pruebas.
+- [TASKS](docs/TASKS.md): las issues de cada etapa con su PR.
 
 ## Requisitos
 
@@ -67,7 +71,7 @@ docker build -t catalogo .
 docker run --rm --network host --env-file .env catalogo
 ```
 
-`--network host` (Linux o WSL) deja que el contenedor use la red de la máquina: llega a la base por `localhost` y a la cátedra por ZeroTier, igual que con `./mvnw spring-boot:run`. El compose con los dos servicios juntos va en el repositorio [Documentacion](https://github.com/prog-2-SQR/Documentacion).
+`--network host` (Linux o WSL) deja que el contenedor use la red de la máquina: llega a la base por `localhost` y a la cátedra por ZeroTier, igual que con `./mvnw spring-boot:run`. Para levantar los dos servicios juntos, con sus bases, está el compose del repositorio [Documentacion](https://github.com/prog-2-SQR/Documentacion#levantar-toda-la-solución).
 
 ## Seguridad
 
@@ -121,7 +125,7 @@ El estado de la sincronización se consulta con `GET /api/sync/status` (con JWT)
 | Componente | Versión |
 |---|---|
 | Java | 25 |
-| Spring Boot | 4.1.1 |
+| Spring Boot | 4.1.2 |
 | Maven (wrapper) | 3.10.0 |
 | PostgreSQL | 18 |
 | Liquibase | gestionado por Spring Boot |
@@ -135,6 +139,8 @@ El estado de la sincronización se consulta con `GET /api/sync/status` (con JWT)
 - [ADR 0003: Referencias entre slices por ID](docs/adr/0003-referencias-entre-slices-por-id.md)
 - [ADR 0004: sync escribe en los slices del catálogo por un puerto de salida](docs/adr/0004-sync-escribe-en-los-slices-por-puerto-de-salida.md)
 - [ADR 0005: Búsqueda por disponibilidad con un puerto de salida hacia los horarios](docs/adr/0005-busqueda-por-disponibilidad-con-puerto-de-salida.md)
+- [ADR 0006: Sincronización completa e incremental](docs/adr/0006-sincronizacion-completa-e-incremental.md)
+- [ADR 0007: Validación del JWT de los usuarios](docs/adr/0007-validacion-del-jwt-de-los-usuarios.md)
 
 ## Repositorios del proyecto
 
